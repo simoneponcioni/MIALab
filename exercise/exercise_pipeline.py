@@ -35,7 +35,7 @@ def collect_image_paths(data_dir):
     dir_filter = futil.DataDirectoryFilter()
 
     # todo: create an instance of futil.FileSystemDataCrawler and pass the corresponding arguments
-    crawler_ = None  # todo: modify here
+    crawler_ = futil.FileSystemDataCrawler(root_dir=data_dir, file_keys=image_keys)  # todo: modify here
 
     return crawler_
 
@@ -43,8 +43,8 @@ def collect_image_paths(data_dir):
 def load_images(image_paths):
     # todo: read the images (T1 as sitk.sitkFloat32, GroundTruth as sitk.sitkUInt8)
     image_dict = {
-        structure.BrainImageTypes.T1w: None,  # todo: modify here
-        structure.BrainImageTypes.GroundTruth: None  # todo: modify here
+        structure.BrainImageTypes.T1w: sitk.ReadImage(fileName=image_paths['T1native'], outputPixelType=sitk.sitkFloat32),  # todo: modify here
+        structure.BrainImageTypes.GroundTruth: sitk.ReadImage(fileName=image_paths['labels_native'], outputPixelType=sitk.sitkUInt8)  # todo: modify here
     }
 
     return image_dict
