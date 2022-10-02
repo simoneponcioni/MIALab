@@ -73,6 +73,9 @@ def register_images(image_dict, atlas_img):
 
 
 def preprocess_filter_rescale_t1(image_dict, new_min_val, new_max_val):
+    '''
+    Use the filter and parameters to get the rescaled T1-weighted image
+    '''
     class MinMaxRescaleFilterParams(fltr.FilterParams):
         def __init__(self, min_, max_) -> None:
             super().__init__()
@@ -84,7 +87,6 @@ def preprocess_filter_rescale_t1(image_dict, new_min_val, new_max_val):
             rescaled_img = sitk.RescaleIntensity(img, params.min, params.max)
             return rescaled_img
 
-    # todo: use the above filter and parameters to get the rescaled T1-weighted image
     filter_ = MinMaxRescaleFilter()
     filter_params = MinMaxRescaleFilterParams(
         min_=new_min_val,
