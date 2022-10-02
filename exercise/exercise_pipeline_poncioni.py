@@ -48,9 +48,9 @@ def load_images(image_paths):
     Read the images (T1 as sitk.sitkFloat32, GroundTruth as sitk.sitkUInt8)
     '''
     image_dict = {
-        structure.BrainImageTypes.T1w: sitk.ReadImage(fileName=list(image_paths.values())[0],
+        structure.BrainImageTypes.T1w: sitk.ReadImage(fileName=image_paths[structure.BrainImageTypes.T1w],
                                                       outputPixelType=sitk.sitkFloat32),
-        structure.BrainImageTypes.GroundTruth: sitk.ReadImage(fileName=list(image_paths.values())[1],
+        structure.BrainImageTypes.GroundTruth: sitk.ReadImage(fileName=image_paths[structure.BrainImageTypes.GroundTruth],
                                                               outputPixelType=sitk.sitkUInt8)
     }
     return image_dict
