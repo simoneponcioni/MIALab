@@ -7,6 +7,7 @@ import argparse
 import datetime
 import os
 import sys
+from this import d
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,6 +16,7 @@ import sklearn.ensemble as sk_ensemble
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+import pandas as pd
 
 
 def main(save_fig: bool, result_dir: str, num_trees: int, tree_depth: int):
@@ -24,7 +26,6 @@ def main(save_fig: bool, result_dir: str, num_trees: int, tree_depth: int):
     os.makedirs(result_dir, exist_ok=True)
 
     # load iris data
-
     data = make_moons(n_samples=1500, noise=0.23, random_state=None)
     features, labels = data[0], data[1]
 
@@ -107,13 +108,15 @@ def main(save_fig: bool, result_dir: str, num_trees: int, tree_depth: int):
     # add legend
     plt.legend(loc='lower left')
 
-    plt.show()
+    # plt.show()
 
     # save figure if flag is set
     if save_fig:
         t = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
         figure.savefig(os.path.join(result_dir, 'rf_plot_{}.png'.format(t)))
         print('Plot saved as ' + os.path.join(result_dir, 'rf_plot_{}.png'.format(t)))
+
+    return train_acc, test_acc
 
 
 if __name__ == "__main__":
@@ -126,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--save_fig',
         type=bool,
-        default=True,
+        default=False,
         help='Set to True to save plot to result_dir.'
     )
 
@@ -137,6 +140,7 @@ if __name__ == "__main__":
         help='Directory for results.'
     )
 
+    '''
     parser.add_argument(
         '--num_trees',
         type=int,
@@ -150,6 +154,25 @@ if __name__ == "__main__":
         default=1,
         help='Maximum depth of the trees in the random forest classifier.'
     )
-
+    '''
     args = parser.parse_args()
-    main(args.save_fig, args.result_dir, args.num_trees, args.tree_depth)
+
+    # num_trees = np.arange(1, 1000, 10, dtype='int')
+    num_trees = np.ones(1000, dtype='int')
+    tree_depth = np.arange(1, 1000, 10, dtype='int')
+
+    train_accuracy = []
+    test_accuracy = []
+    num_trees_data = []
+    tree_depth_data = []
+    for num_t, trees in zip(num_trees, tree_depth):
+        train_accuracy_l, test_accuracy_l = main(args.save_fig, args.result_dir, num_t, trees)
+        train_accuracy.append(train_accuracy_l)
+        test_accuracy.append(test_accuracy_l)
+        num_trees_data.append(num_t)
+        tree_depth_data.append(trees)
+    
+    data = np.c_[num_trees_data, tree_depth_data, train_accuracy, test_accuracy]
+
+    df = pd.DataFrame(data)
+    df.to_csv('rf_res.csv', sep='\t')
