@@ -158,7 +158,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # num_trees = np.arange(1, 1000, 10, dtype='int')
-    num_trees = np.ones(1000, dtype='int')
+    num_trees = np.full(100, 3, dtype='int')
     tree_depth = np.arange(1, 1000, 10, dtype='int')
 
     train_accuracy = []
