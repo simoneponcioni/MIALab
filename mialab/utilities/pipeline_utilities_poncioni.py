@@ -14,7 +14,7 @@ import SimpleITK as sitk
 import mialab.data.structure as structure
 import mialab.filtering.feature_extraction as fltr_feat
 import mialab.filtering.postprocessing as fltr_postp
-import mialab.filtering.preprocessing as fltr_prep
+import mialab.filtering.preprocessing_poncioni as fltr_prep
 import mialab.utilities.multi_processor as mproc
 
 atlas_t1 = sitk.Image()
@@ -289,9 +289,7 @@ def init_evaluator() -> eval_.Evaluator:
     """
 
     # initialize metrics
-    metrics = [metric.DiceCoefficient()]
-    # todo: add hausdorff distance, 95th percentile (see metric.HausdorffDistance)
-    warnings.warn('Initialized evaluation with the Dice coefficient. Do you know other suitable metrics?')
+    metrics = [metric.DiceCoefficient(), metric.HausdorffDistance(95)]
 
     # define the labels to evaluate
     labels = {1: 'WhiteMatter',
