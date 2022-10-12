@@ -127,11 +127,16 @@ class ImageRegistration(pymia_fltr.Filter):
         atlas = params.atlas
         transform = params.transformation
 
-        # TODO: understand what to do if 'is_ground_truth'==True
         is_ground_truth = params.is_ground_truth  # the ground truth will be handled slightly different
 
-        image = sitk.Resample(image, atlas, transform, sitk.sitkNearestNeighbor, 0, 
-                              image.GetPixelIDValue())
+        if is_ground_truth:
+            image = sitk.Resample(image, atlas, transform, sitk.sitkNearestNeighbor, 0, 
+                                  image.GetPixelIDValue())
+        else:
+            image = sitk.Resample(image, atlas, transform, sitk.sitkLinear, 0, 
+                                  image.GetPixelIDValue())
+
+        
 
         return image
 
