@@ -7,7 +7,7 @@ def main():
     '''
     import results, read df, plot results
     '''
-    data = pd.read_csv('bin/mia-result/2022-10-11-14-18-29/results.csv', sep = ';')
+    data = pd.read_csv('bin/mia-result/2022-10-12-12-03-29/results.csv', sep = ';')
     plt.figure(figsize=(10, 10))
     sns.boxplot(x='LABEL', y='DICE', data=data, palette="Set3", linewidth=1)
     plt.title('Dice coefficients')
