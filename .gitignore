@@ -5,6 +5,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Personal stuff
+Literature
+notes.md
+*test*
+
 # C extensions
 *.so
 *.png

@@ -288,7 +288,7 @@ def init_evaluator() -> eval_.Evaluator:
     """
 
     # initialize metrics
-    metrics = [metric.DiceCoefficient(), metric.HausdorffDistance(percentile=95)]
+    metrics = [metric.DiceCoefficient(), metric.HausdorffDistance(percentile=95), metric.AreaUnderCurve(), metric.Sensitivity(), metric.Specificity()]
 
     # define the labels to evaluate
     labels = {1: 'WhiteMatter',
