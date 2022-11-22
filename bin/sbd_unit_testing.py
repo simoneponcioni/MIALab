@@ -32,6 +32,24 @@ def create_cv2_rectangle(
 def create_numpy_rectangle(
     c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=True
 ):
+    """
+    Create two numpy arrays with rectangles.
+
+    Args:
+        c1_a (int): center x of rectangle a
+        c2_a (int): center y of rectangle a
+        c1_b (int): center x of rectangle b
+        c2_b (int): center y of rectangle b
+        width_a (int): width of rectangle a
+        height_a (int): height of rectangle a
+        width_b (int): width of rectangle b
+        height_b (int): height of rectangle b
+        show_plot (bool, optional): Open graphical representation in external window. Defaults to True.
+
+    Returns:
+        arr_a, arr_b: Two numpy arrays with rectangles.
+        arr=1 inside the rectangle, arr=0 outside the rectangle.
+    """
     background = 0 * np.ones((2 * 500, 2 * 500))
     arr_a = np.copy(background)
     arr_a[
@@ -53,6 +71,9 @@ def create_numpy_rectangle(
 
 
 def test_symmetric_boundary_dice_equal():
+    """
+    Same shape, same position, SBD=1
+    """
     c1_a, c2_a = 500, 500
     c1_b, c2_b = c1_a, c2_a
     width_a, height_a = 100, 130
@@ -66,6 +87,10 @@ def test_symmetric_boundary_dice_equal():
 
 
 def test_symmetric_boundary_dice_offset():
+    """
+    Offset shape, rectangle b is shifted and should not touch rectangle a
+    SBD=0
+    """
     c1_a, c2_a = 500, 500
     c1_b, c2_b = c1_a + 200, c2_a + 200
     width_a, height_a = 100, 130
@@ -79,6 +104,10 @@ def test_symmetric_boundary_dice_offset():
 
 
 def test_symmetric_boundary_dice_less_than_one():
+    """
+    Same center, but rectangle b is smaller than rectangle a.
+    SBD < 1
+    """
     c1_a, c2_a = 500, 500
     c1_b, c2_b = c1_a, c2_a
     width_a, height_a = 300, 200
@@ -89,12 +118,3 @@ def test_symmetric_boundary_dice_less_than_one():
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
     assert_less_equal(sbd_sym, 1.0)
-
-
-test_symmetric_boundary_dice_equal()
-test_symmetric_boundary_dice_offset()
-
-
-# # a_thresh, a_bw = sbd.binarize(a)
-# contour_a_arr = sbd.get_y(a)
-# print(contour_a_arr.shape)
