@@ -79,7 +79,7 @@ def test_symmetric_boundary_dice_equal():
     width_a, height_a = 100, 130
     width_b, height_b = width_a, height_a
     arr_a, arr_b = create_numpy_rectangle(
-        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=False
+        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=True
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
@@ -96,7 +96,7 @@ def test_symmetric_boundary_dice_offset():
     width_a, height_a = 100, 130
     width_b, height_b = width_a, height_a
     arr_a, arr_b = create_numpy_rectangle(
-        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=False
+        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=True
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
@@ -113,7 +113,7 @@ def test_symmetric_boundary_dice_less_than_one():
     width_a, height_a = 300, 200
     width_b, height_b = 200, 100
     arr_a, arr_b = create_numpy_rectangle(
-        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=False
+        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=True
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
