@@ -5,7 +5,7 @@ import cv2
 
 class SBD_metric:
     def __init__(self):
-        metric = str("Symmetric_Boundary_Dice")
+        self.metric = str("Symmetric_Boundary_Dice")
 
     def single_dice_coefficient(self, y_true, y_pred_bin):
         # shape of y_true and y_pred_bin: (height, width)

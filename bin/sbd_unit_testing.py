@@ -24,6 +24,32 @@ def create_cv2_rectangle(
     rect = cv2.rectangle(background, a_l, a_b, color, thickness)
     return rect
 
+def create_cv2_circle(x_a, y_a, x_b, y_b, radius_a, radius_b, thickness, show_plot=True):
+    """Create a circle with the given thickness, center, size, and color.
+    Args:
+        thickness (float): Thickness of the circle.
+        center (tuple): Center of the circle.
+        size (tuple): Size of the circle.
+        color (tuple): Color of the circle.
+    Returns:
+        cv2.circle: A circle with the given thickness, center, size, and color.
+    """
+    background = 0 * np.ones((2 * 500, 2 * 500))
+    center_a = (x_a, y_a)
+    center_b = (x_b, y_b)
+    
+    color_a = (255, 255, 255)
+    color_b = (255, 255, 255)
+    thickness = -1
+    circle_a = cv2.circle(background, center_a, radius_a, color_a, thickness)
+    circle_b = cv2.circle(background, center_b, radius_b, color_b, thickness)
+
+    if show_plot is not False:
+        plot_combined = circle_a + circle_b
+        plt.imshow(plot_combined, cmap="gist_gray")
+        plt.show()
+    return circle_a, circle_b
+
 
 # a = create_cv2_rectangle(background, c1, c2, 100, 130, thickness, 1)
 # b = create_cv2_rectangle(background, c1 + 200, c2 + 200, 100, 130, thickness, 1)
@@ -79,7 +105,7 @@ def test_symmetric_boundary_dice_equal():
     width_a, height_a = 100, 130
     width_b, height_b = width_a, height_a
     arr_a, arr_b = create_numpy_rectangle(
-        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=True
+        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=False
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
@@ -96,7 +122,7 @@ def test_symmetric_boundary_dice_offset():
     width_a, height_a = 100, 130
     width_b, height_b = width_a, height_a
     arr_a, arr_b = create_numpy_rectangle(
-        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=True
+        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=False
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
@@ -113,8 +139,23 @@ def test_symmetric_boundary_dice_less_than_one():
     width_a, height_a = 300, 200
     width_b, height_b = 200, 100
     arr_a, arr_b = create_numpy_rectangle(
-        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=True
+        c1_a, c2_a, c1_b, c2_b, width_a, height_a, width_b, height_b, show_plot=False
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
     assert_less_equal(sbd_sym, 1.0)
+
+
+def test_circles():
+    """
+    Test if the circle is created correctly.
+    """
+    c1_a, c2_a = 500, 500
+    c1_b, c2_b = 100, 100
+    radius_a = 100
+    radius_b = radius_a
+    thickness = -1
+    arr_a, arr_b = create_cv2_circle(c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, thickness, show_plot=True)
+    metric = sbd.SBD_metric()
+    sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
+    assert_equal(sbd_sym, 1.0)
