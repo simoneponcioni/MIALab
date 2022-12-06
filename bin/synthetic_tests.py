@@ -3,6 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 from medpy import metric
+import matplotlib
+
+# rcParams and settings
+f = 1
+plt.rcParams["figure.figsize"] = [10 * f, 10 * f]
+plt.rcParams["font.size"] = 15
+matplotlib.rcParams["mathtext.fontset"] = "stix"
+matplotlib.rcParams["font.family"] = "STIXGeneral"
 
 
 def hd(preds, targets, hd95=True):
@@ -11,12 +19,10 @@ def hd(preds, targets, hd95=True):
         haussdorf_dist = 0
     else:
         haussdorf_dist = metric.hd95(preds, targets, voxelspacing=None, connectivity=1)
-
     return haussdorf_dist
 
 
 def create_circular_mask(h, w, center=None, radius=None):
-
     if center is None:  # use the middle of the image
         center = (int(w / 2), int(h / 2))
     if radius is None:  # use the smallest distance between the center and image walls
@@ -69,7 +75,7 @@ def test_circles(i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b):
     Test if the circle is created correctly.
     """
     arr_a, arr_b = create_cv2_circle(
-        c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, i, show_plot=True
+        c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, i, show_plot=False
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
@@ -79,10 +85,33 @@ def test_circles(i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b):
     return sbd_sym, dice_coef, HD95_coef
 
 
-def plot_evolution(dx, sbd_arr):
+def plot_evolution(dx, sbd_arr, dice_arr, title):
     plt.figure(figsize=(10, 10))
-    plt.plot(dx, sbd_arr, color="tab:grey", linewidth=2)
-    plt.show()
+    plt.title(f"Metric evolution with increasing distance", weight="bold")
+    plt.plot(dx, sbd_arr, color="tab:grey", linewidth=2, label="SBD")
+    plt.plot(dx, dice_arr, color="tab:green", linewidth=2, label="Dice")
+    plt.xlim(0)
+    plt.ylim(0)
+    plt.xlabel("Distance between circles (px)")
+    plt.ylabel("Metric (-)")
+    plt.legend(loc="upper right", fontsize=14)
+    plt.tight_layout()
+    fig_path = Path("sbd_results", f"sbd_vs_dice_synthetic_evolution_{title}.png")
+    plt.savefig(fig_path, dpi=150)
+
+
+def plot_evolution_HD(dx, HD95_arr, title):
+    plt.figure(figsize=(10, 10))
+    plt.title(f"Metric evolution with increasing distance", weight="bold")
+    plt.plot(dx, HD95_arr, color="tab:red", linewidth=2, label="HD95")
+    plt.xlim(0)
+    plt.ylim(0)
+    plt.xlabel("Distance between circles (px)")
+    plt.ylabel("Hausdorff Distance (px)")
+    plt.legend(loc="upper right", fontsize=14)
+    plt.tight_layout()
+    fig_path = Path("sbd_results" + f"HD95_synthetic_evolution_{title}.png")
+    plt.savefig(fig_path, dpi=150)
 
 
 def circles_dxdy(dx, radius_a, c1_a, c2_a):
@@ -101,6 +130,7 @@ def circles_dxdy(dx, radius_a, c1_a, c2_a):
         sbd_arr.append(sbd_sym)
         dice_arr.append(dice_co)
         HD95_arr.append(HD95_co)
+        print(f"2D Dice coefficient:\t\t{dice_co:.5f}")
     return (
         sbd_arr,
         dice_arr,
@@ -133,22 +163,20 @@ def circles_dr(dr, radius_a, c1_a, c2_a):
 
 if __name__ == "__main__":
     # code for running evaluation of SBD, dice metric with increasing distance
-    dx = np.linspace(0, 150, 5)
+    dx = np.linspace(0, 150, 100)
     radius_a = 100
     c1_a = 500
     c2_a = 500
     sbd_arr, dice_arr, HD95_arr = circles_dxdy(dx, radius_a, c1_a, c2_a)
-    plot_evolution(dx, sbd_arr)
-    plot_evolution(dx, dice_arr)
-    plot_evolution(dx, HD95_arr)
+    plot_evolution(dx, sbd_arr, dice_arr, title="circles_dxdy")
+    plot_evolution_HD(dx, HD95_arr, title="circles_dxdy")
 
     # code for running evaluation of SBD, dice metric with decreasing radius
-    dr = np.linspace(0, 50, 5)
+    dr = np.linspace(0, 50, 100)
     print(dr)
     radius_a = 100
     c1_a = 500
     c2_a = 500
     sbd_arr, dice_arr, HD95_arr = circles_dr(dr, radius_a, c1_a, c2_a)
-    plot_evolution(dr, sbd_arr)
-    plot_evolution(dr, dice_arr)
-    plot_evolution(dr, HD95_arr)
+    plot_evolution(dr, sbd_arr, dice_arr, title="circles_dr")
+    plot_evolution_HD(dr, HD95_arr, title="circles_dr")
