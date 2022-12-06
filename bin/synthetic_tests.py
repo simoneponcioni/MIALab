@@ -2,6 +2,17 @@ import symmetric_boundary_dice as sbd
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+from medpy import metric
+
+
+def hd(preds, targets, hd95=True):
+    # checking if voxels are empty.
+    if not np.any(preds) or np.all(preds) or not np.any(targets) or np.all(targets):
+        haussdorf_dist = 0
+    else:
+        haussdorf_dist = metric.hd95(preds, targets, voxelspacing=None, connectivity=1)
+
+    return haussdorf_dist
 
 
 def create_circular_mask(h, w, center=None, radius=None):
@@ -62,7 +73,10 @@ def test_circles(i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b):
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
-    return sbd_sym
+
+    dice_coef = np.mean(metric.single_dice_coefficient(arr_a, arr_b))
+    HD95_coef = hd(arr_a, arr_b)
+    return sbd_sym, dice_coef, HD95_coef
 
 
 def plot_evolution(dx, sbd_arr):
@@ -73,43 +87,68 @@ def plot_evolution(dx, sbd_arr):
 
 def circles_dxdy(dx, radius_a, c1_a, c2_a):
     sbd_arr = []
+    dice_arr = []
+    HD95_arr = []
     radius_b = radius_a
     for i, d in enumerate(dx):
         # iteratively create circles with increasing distance
         c1_b = 500 + int(d)
         c2_b = 500 + int(d)
-        sbd_sym = test_circles(i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b)
+        sbd_sym, dice_co, HD95_co = test_circles(
+            i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b
+        )
+
         sbd_arr.append(sbd_sym)
-    return sbd_arr
+        dice_arr.append(dice_co)
+        HD95_arr.append(HD95_co)
+    return (
+        sbd_arr,
+        dice_arr,
+        HD95_arr,
+    )
 
 
 def circles_dr(dr, radius_a, c1_a, c2_a):
     sbd_arr = []
+    dice_arr = []
+    HD95_arr = []
     c1_b = c1_a
     c2_b = c2_a
 
     for i, d in enumerate(dr):
         # iteratively create circles with decreasing radius
         radius_b = radius_a - d
-        sbd_sym = test_circles(i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b)
+        sbd_sym, dice_co, HD95_co = test_circles(
+            i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b
+        )
         sbd_arr.append(sbd_sym)
-    return sbd_arr
+        dice_arr.append(dice_co)
+        HD95_arr.append(HD95_co)
+    return (
+        sbd_arr,
+        dice_arr,
+        HD95_arr,
+    )
 
 
 if __name__ == "__main__":
-    # code for running evaluation of SBD metric with increasing distance
+    # code for running evaluation of SBD, dice metric with increasing distance
     dx = np.linspace(0, 150, 5)
     radius_a = 100
     c1_a = 500
     c2_a = 500
-    sbd_arr = circles_dxdy(dx, radius_a, c1_a, c2_a)
+    sbd_arr, dice_arr, HD95_arr = circles_dxdy(dx, radius_a, c1_a, c2_a)
     plot_evolution(dx, sbd_arr)
+    plot_evolution(dx, dice_arr)
+    plot_evolution(dx, HD95_arr)
 
-    # code for running evaluation of SBD metric with decreasing radius
+    # code for running evaluation of SBD, dice metric with decreasing radius
     dr = np.linspace(0, 50, 5)
     print(dr)
     radius_a = 100
     c1_a = 500
     c2_a = 500
-    sbd_arr = circles_dr(dr, radius_a, c1_a, c2_a)
+    sbd_arr, dice_arr, HD95_arr = circles_dr(dr, radius_a, c1_a, c2_a)
     plot_evolution(dr, sbd_arr)
+    plot_evolution(dr, dice_arr)
+    plot_evolution(dr, HD95_arr)
