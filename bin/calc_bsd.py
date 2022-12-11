@@ -21,7 +21,8 @@ def import_pred(img_path, gt_spacing, gt_direction, gt_origin):
     img_sitk.SetSpacing(gt_spacing)
     img_sitk.SetDirection(gt_direction)
     img_sitk.SetOrigin(gt_origin)
-    return sitk.GetArrayFromImage(img_sitk)
+    img_sitk = sitk.Cast(img_sitk, sitk.sitkUInt8)
+    return sitk.PermuteAxes(sitk.GetArrayFromImage(img_sitk), (2, 1, 0))
 
 
 def plot_gt_pred(gt, pred, basepath, slice_=150):
