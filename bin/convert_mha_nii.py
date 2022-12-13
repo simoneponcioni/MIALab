@@ -31,15 +31,19 @@ def create_mha_masks(res_dir):
         Path(img.parent / "masks" / img_stem).mkdir(exist_ok=True)
         img_stem = Path(Path(img).stem)
 
-        for m in range(1, 5):
+        for m in range(1, 6):
             mask = np.zeros(img_np.shape)
             mask[img_np == m] = 1
             mask_name = f"{img_stem}_mask_{m}.mha"
             mask_path = img.parent / "masks" / img_stem / mask_name
-            sitk.WriteImage(sitk.GetImageFromArray(mask), str(mask_path))
+            img_mask = sitk.GetImageFromArray(mask)
+            img_mask.SetSpacing(img_sitk.GetSpacing())
+            img_mask.SetOrigin(img_sitk.GetOrigin())
+            img_mask.SetDirection(img_sitk.GetDirection())
+            sitk.WriteImage(img_mask, str(mask_path))
 
 
-res_dir = "bin/mia-result/2022-12-06-16-50-06"
+res_dir = "bin/mia-result/2022-12-13-11-56-12"
 
 
 def main():

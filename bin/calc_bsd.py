@@ -7,22 +7,15 @@ import symmetric_boundary_dice as sbd
 
 def import_gt(img_path, label_=int(2)):
     img_sitk = sitk.ReadImage(str(Path(img_path).resolve()))
-    spacing = img_sitk.GetSpacing()
-    direction = img_sitk.GetDirection()
-    origin = img_sitk.GetOrigin()
     img_np = sitk.GetArrayFromImage(img_sitk)
     mask = np.zeros(img_np.shape)
     mask[img_np == label_] = 1
-    return mask, spacing, direction, origin
+    return mask
 
 
-def import_pred(img_path, gt_spacing, gt_direction, gt_origin):
+def import_pred(img_path):
     img_sitk = sitk.ReadImage(str(Path(img_path).resolve()))
-    img_sitk.SetSpacing(gt_spacing)
-    img_sitk.SetDirection(gt_direction)
-    img_sitk.SetOrigin(gt_origin)
-    img_sitk = sitk.Cast(img_sitk, sitk.sitkUInt8)
-    return sitk.PermuteAxes(sitk.GetArrayFromImage(img_sitk), (2, 1, 0))
+    return sitk.GetArrayFromImage(img_sitk)
 
 
 def plot_gt_pred(gt, pred, basepath, slice_=150):
@@ -43,15 +36,16 @@ def calc_bsd(gt, pred, slice_=150):
 
 
 def main():
-    slice_s = 150
+    slice_s = 100
+    label_s = int(5)
     basepath = Path("/home/simoneponcioni/Documents/03_LECTURES/MIALab/")
     pred_path = (
         basepath
-        / "bin/mia-result/2022-12-06-16-50-06/masks/117122_SEG-PP/117122_SEG-PP_mask_2.mha"
+        / f"bin/mia-result/2022-12-06-16-50-06/masks/118932_SEG-PP/118932_SEG-PP_mask_{label_s}.mha"
     )
-    gt_path = "/home/simoneponcioni/Documents/03_LECTURES/MIALab/data/test/117122/labels_native.nii.gz"
-    gt, gt_spacing, gt_direction, gt_origin = import_gt(gt_path, label_=2)
-    pred = import_pred(pred_path, gt_spacing, gt_direction, gt_origin)
+    gt_path = "/home/simoneponcioni/Documents/03_LECTURES/MIALab/data/test/118932/labels_native.nii.gz"
+    gt = import_gt(gt_path, label_=label_s)
+    pred = import_pred(pred_path)
     plot_gt_pred(gt, pred, basepath, slice_=slice_s)
     bsd = calc_bsd(gt, pred, slice_=slice_s)
     print(bsd)
