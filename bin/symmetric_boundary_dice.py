@@ -14,16 +14,16 @@ class SBD_metric:
             return 1
         return (2 * intersection) / (np.sum(y_true) + np.sum(y_pred_bin))
 
-    def Directional_Boundary_Dice(self, y_true, y_pred):
+    def Directional_Boundary_Dice(self, y_true, y_pred, size_px=int(3)):
         """
         Directional Boundary Dice
-        Edges found in the ground truth (y_true), Find 3x3 cube around these voxels
+        Edges found in the ground truth (y_true), Find size_px x size_px cube around these voxels
         and compute Dice for comparison with the voxels in the SAME SPACE in the segmented result (y_pred)
         """
 
         # Find edges
-        imax = sp.ndimage.maximum_filter(y_true, size=3) != y_true
-        imin = sp.ndimage.minimum_filter(y_true, size=3) != y_true
+        imax = sp.ndimage.maximum_filter(y_true, size=size_px) != y_true
+        imin = sp.ndimage.minimum_filter(y_true, size=size_px) != y_true
         icomb = np.logical_or(imax, imin)
 
         y_true_edges = np.where(icomb, y_true, 0)
@@ -56,10 +56,10 @@ class SBD_metric:
         Two way Directional Boundary Dice
         """
         true_DBD, true_sum_DBD, true_n_edge_points = self.Directional_Boundary_Dice(
-            y_true, y_pred
+            y_true, y_pred, size_px=int(10)
         )
         pred_DBD, pred_sum_DBD, pred_n_edge_points = self.Directional_Boundary_Dice(
-            y_pred, y_true
+            y_pred, y_true, size_px=int(10)
         )
         print(f"Directional Boundary Dice:\t{true_DBD:.5f}")
 

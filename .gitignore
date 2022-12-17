@@ -8,6 +8,7 @@ __pycache__/
 # Personal stuff
 Literature
 notes.md
+vis_slider.py
 
 # C extensions
 *.so
