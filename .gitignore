@@ -8,6 +8,8 @@ __pycache__/
 # Personal stuff
 Literature
 notes.md
+vis_slider.py
+plotly_template.py
 
 # C extensions
 *.so

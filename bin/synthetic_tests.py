@@ -59,6 +59,7 @@ def create_cv2_circle(x_a, y_a, x_b, y_b, radius_a, radius_b, i, show_plot=True)
     circle_b[mask_b] = 1
 
     if show_plot is not False:
+        plt.figure(figsize=(10, 10))
         plot_combined = circle_a + circle_b
         plt.imshow(plot_combined, cmap="gist_gray", vmin=0, vmax=2)
         plt.title(f"Offset circle = {dist_c:.1f} px", weight="bold")
@@ -75,7 +76,7 @@ def test_circles(i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b):
     Test if the circle is created correctly.
     """
     arr_a, arr_b = create_cv2_circle(
-        c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, i, show_plot=False
+        c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, i, show_plot=True
     )
     metric = sbd.SBD_metric()
     sbd_sym = metric.Symmetric_Boundary_Dice(arr_a, arr_b)
@@ -163,7 +164,7 @@ def circles_dr(dr, radius_a, c1_a, c2_a):
 
 if __name__ == "__main__":
     # code for running evaluation of SBD, dice metric with increasing distance
-    dx = np.linspace(0, 150, 100)
+    dx = np.linspace(0, 150, 10)
     radius_a = 100
     c1_a = 500
     c2_a = 500
@@ -172,7 +173,7 @@ if __name__ == "__main__":
     plot_evolution_HD(dx, HD95_arr, title="circles_dxdy")
 
     # code for running evaluation of SBD, dice metric with decreasing radius
-    dr = np.linspace(0, 50, 100)
+    dr = np.linspace(0, 50, 10)
     print(dr)
     radius_a = 100
     c1_a = 500
