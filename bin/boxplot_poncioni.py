@@ -2,11 +2,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
+# font stix
+plt.rcParams["mathtext.fontset"] = "stix"
+plt.rcParams["font.family"] = "STIXGeneral"
+plt.rcParams["font.size"] = 16
+
 
 def plot_violin(data, title, savepath):
     plt.figure(figsize=(10, 10))
     sns.violinplot(x="LABEL", y="SBD_MEAN", data=data, palette="Set3", linewidth=1)
-    plt.title(title)
+    plt.title(title, weight="bold", fontsize=20)
+    plt.tight_layout()
     plt.savefig(savepath)
     plt.show()
 
@@ -14,7 +20,8 @@ def plot_violin(data, title, savepath):
 def plot_box(data, title, savepath):
     plt.figure(figsize=(10, 10))
     sns.boxplot(x="LABEL", y="SBD_MEAN", data=data, palette="Set3", linewidth=1)
-    plt.title(title)
+    plt.title(title, weight="bold", fontsize=20)
+    plt.tight_layout()
     plt.savefig(savepath)
     plt.show()
 
