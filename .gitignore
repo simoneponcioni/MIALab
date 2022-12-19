@@ -13,6 +13,7 @@ notes.md
 *.so
 *.png
 *.csv
+*.gif
 
 # Distribution / packaging
 .Python
