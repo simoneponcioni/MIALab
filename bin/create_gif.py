@@ -7,11 +7,16 @@ from pathlib import Path
 
 def main():
     # Load the two SimpleITK images
-    print(os.getcwd())
     image1 = sitk.ReadImage(
-        "/Users/simoneponcioni/Desktop/118528_labels_native_reg.nii.gz"
+        "/Users/simoneponcioni/Documents/ARTORG/03_Lectures/MIALabs/MIALab/data/labels_transformed/117122.nii.gz"
     )
-    image2 = sitk.ReadImage("/Users/simoneponcioni/Desktop/118528_SEG-PP_mask_1.mha")
+    image2 = sitk.ReadImage(
+        "/Users/simoneponcioni/Documents/ARTORG/03_Lectures/MIALabs/MIALab/bin/mia-result/2022-12-13-11-56-12/masks/117122_SEG-PP/117122_SEG-PP_mask_1.mha"
+    )
+
+    # create mask for image1 containing only label 1
+    image1 = sitk.BinaryThreshold(image1, 1, 1, 1, 0)
+
     # Get the spacing of image2
     spacing = image2.GetSpacing()
 
@@ -39,16 +44,14 @@ def main():
     image2 = sitk.Cast(image2, sitk.sitkUInt8)
 
     red = [255, 0, 0]
-    green = [0, 255, 0]
     blue = [0, 0, 255]
-
-    # Create an empty list to store the images for the GIF
-    images = []
 
     # Create a temporary directory to store the images
     temp_dir = Path("MIALab/sbd_results/temp").mkdir(parents=True, exist_ok=True)
     temp_dir = str(Path("MIALab/sbd_results/temp").resolve())
 
+    # Create an empty list to store the images for the GIF
+    images = []
     # Loop through the slices of both images
     for i in range(max(num_slices1, num_slices2)):
         # red goes to the first label, green to second, blue to third
