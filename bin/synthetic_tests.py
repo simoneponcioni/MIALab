@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from medpy import metric
 import matplotlib
+import timeit
 
 # rcParams and settings
 f = 1
@@ -164,20 +165,59 @@ def circles_dr(dr, radius_a, c1_a, c2_a):
 
 if __name__ == "__main__":
     # code for running evaluation of SBD, dice metric with increasing distance
+    #  dx = np.linspace(0, 150, 10)
+    #  radius_a = 100
+    #  c1_a = 500
+    #  c2_a = 500
+
     dx = np.linspace(0, 150, 10)
     radius_a = 100
     c1_a = 500
     c2_a = 500
-    sbd_arr, dice_arr, HD95_arr = circles_dxdy(dx, radius_a, c1_a, c2_a)
-    plot_evolution(dx, sbd_arr, dice_arr, title="circles_dxdy")
-    plot_evolution_HD(dx, HD95_arr, title="circles_dxdy")
+    radius_b = radius_a
+    c1_b = 500
+    c2_b = 500
+    i = 1
+    arr_a, arr_b = create_cv2_circle(
+        c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, i, show_plot=False
+    )
 
-    # code for running evaluation of SBD, dice metric with decreasing radius
-    dr = np.linspace(0, 50, 10)
-    print(dr)
-    radius_a = 100
-    c1_a = 500
-    c2_a = 500
-    sbd_arr, dice_arr, HD95_arr = circles_dr(dr, radius_a, c1_a, c2_a)
-    plot_evolution(dr, sbd_arr, dice_arr, title="circles_dr")
-    plot_evolution_HD(dr, HD95_arr, title="circles_dr")
+    def test_setup_sbd():
+        metric = sbd.SBD_metric()
+        metric.Symmetric_Boundary_Dice(arr_a, arr_b)
+
+    times = timeit.repeat(test_setup_sbd, repeat=100, number=1)
+    # Calculate the average execution time
+    average_time = sum(times) / len(times)
+    print(f"Average execution time SBD: {average_time:.5f} seconds")
+
+    def test_setup_dice():
+        metric = sbd.SBD_metric()
+        metric.single_dice_coefficient(arr_a, arr_b)
+
+    times = timeit.repeat(test_setup_dice, repeat=100, number=1)
+    # Calculate the average execution time
+    average_time = sum(times) / len(times)
+    print(f"Average execution time DICE: {average_time:.5f} seconds")
+
+    def test_setup_hd():
+        hd(arr_a, arr_b)
+
+    times = timeit.repeat(test_setup_hd, repeat=100, number=1)
+    # Calculate the average execution time
+    average_time = sum(times) / len(times)
+    print(f"Average execution time HD95: {average_time:.5f} seconds")
+
+    # sbd_arr, dice_arr, HD95_arr = circles_dxdy(dx, radius_a, c1_a, c2_a)
+    # plot_evolution(dx, sbd_arr, dice_arr, title="circles_dxdy")
+    # plot_evolution_HD(dx, HD95_arr, title="circles_dxdy")
+
+    # # code for running evaluation of SBD, dice metric with decreasing radius
+    # dr = np.linspace(0, 50, 10)
+    # print(dr)
+    # radius_a = 100
+    # c1_a = 500
+    # c2_a = 500
+    # sbd_arr, dice_arr, HD95_arr = circles_dr(dr, radius_a, c1_a, c2_a)
+    # plot_evolution(dr, sbd_arr, dice_arr, title="circles_dr")
+    # plot_evolution_HD(dr, HD95_arr, title="circles_dr")
