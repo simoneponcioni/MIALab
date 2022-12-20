@@ -9,7 +9,7 @@ import timeit
 # rcParams and settings
 f = 1
 plt.rcParams["figure.figsize"] = [10 * f, 10 * f]
-plt.rcParams["font.size"] = 15
+plt.rcParams["font.size"] = 22
 matplotlib.rcParams["mathtext.fontset"] = "stix"
 matplotlib.rcParams["font.family"] = "STIXGeneral"
 
@@ -64,7 +64,7 @@ def create_cv2_circle(x_a, y_a, x_b, y_b, radius_a, radius_b, i, show_plot=True)
         plot_combined = circle_a + circle_b
         plt.imshow(plot_combined, cmap="gist_gray", vmin=0, vmax=2)
         plt.title(f"Offset circle = {dist_c:.1f} px", weight="bold")
-        plt.colorbar()
+        plt.colorbar(fraction=0.046, pad=0.04)
         savepath = r"sbd_results"
         filepath = Path(savepath, f"circle_{i}.png")
         plt.savefig(filepath)
@@ -88,31 +88,37 @@ def test_circles(i, c1_a, c2_a, c1_b, c2_b, radius_a, radius_b):
 
 
 def plot_evolution(dx, sbd_arr, dice_arr, title):
+    fontsize_s = int(24)
     plt.figure(figsize=(10, 10))
-    plt.title(f"Metric evolution with increasing distance", weight="bold")
+    plt.title(
+        f"Metric evolution with increasing distance", weight="bold", fontsize=fontsize_s
+    )
     plt.plot(dx, sbd_arr, color="tab:grey", linewidth=2, label="SBD")
     plt.plot(dx, dice_arr, color="tab:green", linewidth=2, label="Dice")
     plt.xlim(0)
     plt.ylim(0)
-    plt.xlabel("Distance between circles (px)")
-    plt.ylabel("Metric (-)")
-    plt.legend(loc="upper right", fontsize=14)
+    plt.xlabel("Distance between circles (px)", fontsize=fontsize_s)
+    plt.ylabel("Metric (-)", fontsize=fontsize_s)
+    plt.legend(loc="upper right", fontsize=fontsize_s)
     plt.tight_layout()
     fig_path = Path("sbd_results", f"sbd_vs_dice_synthetic_evolution_{title}.png")
     plt.savefig(fig_path, dpi=150)
 
 
 def plot_evolution_HD(dx, HD95_arr, title):
+    fontsize_s = int(20)
     plt.figure(figsize=(10, 10))
-    plt.title(f"Metric evolution with increasing distance", weight="bold")
+    plt.title(
+        f"Metric evolution with increasing distance", weight="bold", fontsize=fontsize_s
+    )
     plt.plot(dx, HD95_arr, color="tab:red", linewidth=2, label="HD95")
     plt.xlim(0)
     plt.ylim(0)
-    plt.xlabel("Distance between circles (px)")
-    plt.ylabel("Hausdorff Distance (px)")
-    plt.legend(loc="upper right", fontsize=14)
+    plt.xlabel("Distance between circles (px)", fontsize=fontsize_s)
+    plt.ylabel("Hausdorff Distance (px)", fontsize=fontsize_s)
+    plt.legend(loc="upper right", fontsize=fontsize_s)
     plt.tight_layout()
-    fig_path = Path("sbd_results" + f"HD95_synthetic_evolution_{title}.png")
+    fig_path = Path("sbd_results", f"HD95_synthetic_evolution_{title}.png")
     plt.savefig(fig_path, dpi=150)
 
 
@@ -165,59 +171,28 @@ def circles_dr(dr, radius_a, c1_a, c2_a):
 
 if __name__ == "__main__":
     # code for running evaluation of SBD, dice metric with increasing distance
-    #  dx = np.linspace(0, 150, 10)
-    #  radius_a = 100
-    #  c1_a = 500
-    #  c2_a = 500
+    # dx = np.linspace(0, 150, 10)
+    # radius_a = 100
+    # c1_a = 500
+    # c2_a = 500
+    # radius_b = radius_a
+    # c1_b = 500
+    # c2_b = 500
 
-    dx = np.linspace(0, 150, 10)
-    radius_a = 100
-    c1_a = 500
-    c2_a = 500
-    radius_b = radius_a
-    c1_b = 500
-    c2_b = 500
-    i = 1
-    arr_a, arr_b = create_cv2_circle(
-        c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, i, show_plot=False
-    )
-
-    def test_setup_sbd():
-        metric = sbd.SBD_metric()
-        metric.Symmetric_Boundary_Dice(arr_a, arr_b)
-
-    times = timeit.repeat(test_setup_sbd, repeat=100, number=1)
-    # Calculate the average execution time
-    average_time = sum(times) / len(times)
-    print(f"Average execution time SBD: {average_time:.5f} seconds")
-
-    def test_setup_dice():
-        metric = sbd.SBD_metric()
-        metric.single_dice_coefficient(arr_a, arr_b)
-
-    times = timeit.repeat(test_setup_dice, repeat=100, number=1)
-    # Calculate the average execution time
-    average_time = sum(times) / len(times)
-    print(f"Average execution time DICE: {average_time:.5f} seconds")
-
-    def test_setup_hd():
-        hd(arr_a, arr_b)
-
-    times = timeit.repeat(test_setup_hd, repeat=100, number=1)
-    # Calculate the average execution time
-    average_time = sum(times) / len(times)
-    print(f"Average execution time HD95: {average_time:.5f} seconds")
+    # # arr_a, arr_b = create_cv2_circle(
+    # #     c1_a, c2_a, c1_b, c2_b, radius_a, radius_b, i, show_plot=False
+    # # )
 
     # sbd_arr, dice_arr, HD95_arr = circles_dxdy(dx, radius_a, c1_a, c2_a)
     # plot_evolution(dx, sbd_arr, dice_arr, title="circles_dxdy")
     # plot_evolution_HD(dx, HD95_arr, title="circles_dxdy")
 
-    # # code for running evaluation of SBD, dice metric with decreasing radius
-    # dr = np.linspace(0, 50, 10)
-    # print(dr)
-    # radius_a = 100
-    # c1_a = 500
-    # c2_a = 500
-    # sbd_arr, dice_arr, HD95_arr = circles_dr(dr, radius_a, c1_a, c2_a)
-    # plot_evolution(dr, sbd_arr, dice_arr, title="circles_dr")
-    # plot_evolution_HD(dr, HD95_arr, title="circles_dr")
+    # code for running evaluation of SBD, dice metric with decreasing radius
+    dr = np.linspace(0, 50, 10)
+    print(dr)
+    radius_a = 100
+    c1_a = 500
+    c2_a = 500
+    sbd_arr, dice_arr, HD95_arr = circles_dr(dr, radius_a, c1_a, c2_a)
+    plot_evolution(dr, sbd_arr, dice_arr, title="circles_dr")
+    plot_evolution_HD(dr, HD95_arr, title="circles_dr")
