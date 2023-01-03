@@ -1,6 +1,0 @@
-spend more time on analysis, less on computation
-2d slice by slice better than 3d whole volume
-
---- synthetic experiment ---
-2d circle unit test, linspace with changing center and radius
-give the SD instead of a single value
